@@ -3,18 +3,21 @@ import matplotlib.pyplot as plt
 
 class CanonicalPID:
     def __init__(self, Kp, Ki, Kd, min_output, max_output, dt):
-        self.dt = dt
-        self.max_output, self.min_output = max_output, min_output
-
         self.a1 = -1.0
         self.a2 = 0.0
 
-        self.b0 = Kp + Ki * dt + Kd / dt
-        self.b1 = -Kp - 2.0 * Kd / dt
-        self.b2 = Kd / dt
+        self.update_coeficients(Kp, Ki, Kd, min_output, max_output, dt)
 
         self.w1 = 0.0
         self.w2 = 0.0
+
+    def update_coeficients(self, Kp, Ki, Kd, min_output, max_output, dt):
+        self.dt = dt
+        self.max_output, self.min_output = max_output, min_output
+        
+        self.b0 = Kp + Ki * dt + Kd / dt
+        self.b1 = -Kp - 2.0 * Kd / dt
+        self.b2 = Kd / dt
 
     def compute(self, error):
         w0 = error - self.a1 * self.w1 - self.a2 * self.w2
