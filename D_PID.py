@@ -14,7 +14,7 @@ class CanonicalPID:
     def update_coeficients(self, Kp, Ki, Kd, min_output, max_output, dt):
         self.dt = dt
         self.max_output, self.min_output = max_output, min_output
-        
+
         self.b0 = Kp + Ki * dt + Kd / dt
         self.b1 = -Kp - 2.0 * Kd / dt
         self.b2 = Kd / dt
@@ -77,5 +77,6 @@ plt.show()
 0.005
 0.05
 10
+
 
 """
