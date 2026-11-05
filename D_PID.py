@@ -1,6 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+def engine_fuction(control, dt):
+    return control * dt * 10
+
 class CanonicalPID:
     def __init__(self, Kp, Ki, Kd, min_output, max_output, dt):
         self.a1 = -1.0
@@ -56,7 +59,7 @@ for i in range(steps):
     control = pid.compute(error)
 
 
-    PV += control * 0.01 
+    PV += engine_fuction(control, dt)
 
     ppoints[i] = control
     opoints[i] = PV
