@@ -1,6 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+import os
+
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["OMP_NUM_THREADS"] = "1"
+
+import control as ct
+
 def engine_fuction(control, dt):
     return control * dt * 10
 
@@ -32,7 +40,7 @@ class CanonicalPID:
         return max(self.min_output, min(self.max_output, output))
 
 
-dt = 0.001 
+dt = 0.0001 
 total_time = 5
 steps = int(total_time / dt)
 
@@ -77,8 +85,8 @@ plt.legend()
 plt.show()
 """
 1.0
-0.005
-0.05
+0.1
+0.07
 10
 
 
