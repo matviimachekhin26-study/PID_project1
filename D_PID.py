@@ -1,14 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-import os
-
-os.environ["OPENBLAS_NUM_THREADS"] = "1"
-os.environ["MKL_NUM_THREADS"] = "1"
-os.environ["OMP_NUM_THREADS"] = "1"
-
-import control as ct
-
 def engine_fuction(control, dt):
     return control * dt * 10
 
