@@ -45,7 +45,7 @@ class CanonicalPID:
         self.b2 = Kd / dt
 
     def compute(self, error, correction):
-        adj_error = error - correction
+        adj_error = error + correction
 
         w0 = adj_error - self.a1 * self.w1 - self.a2 * self.w2
         v = self.b0 * w0 + self.b1 * self.w1 + self.b2 * self.w2
@@ -60,8 +60,8 @@ class CanonicalPID:
         return output, sat_diff
 
 
-dt = 0.001
-total_time = 100
+dt = 0.00001
+total_time = 20
 steps = int(total_time / dt)
 
 tpoints = np.arange(steps) * dt
@@ -103,7 +103,7 @@ SP = params[8]
 
 engine = Engine(K, T1, T2, dt)
 
-pid = CanonicalPID(Kp, 0, 0, -lim, lim, dt)
+pid = CanonicalPID(Kp, Ki, Kd, -lim, lim, dt)
 
 spoints = np.full(steps, SP)
 ppoints = np.zeros(steps)
@@ -114,16 +114,10 @@ sat_diff = 0.0
 
 for i in range(steps):
     error = SP - PV
-    control, sat_diff = pid.compute(error, sat_diff * Kp / Ki * obs_const)
+    control, sat_diff = pid.compute(error, - sat_diff * obs_const / pid.b0)
 
 
     PV += engine.compute(control)
-
-    if(i == 1):
-        pid.update_coeficients(Kp, Ki, 0, -lim, lim, dt)
-
-    if(i == 2):
-        pid.update_coeficients(Kp, Ki, Kd, -lim, lim, dt)
 
     ppoints[i] = control
     opoints[i] = PV
@@ -139,16 +133,3 @@ plt.ylabel('Значення')
 plt.grid(True)
 plt.legend()
 plt.show()
-"""
-2.0
-0.2
-0.1
-2.0
-0.5
-0.5
-10.0
-0.0
-10.0
-
-
-"""
