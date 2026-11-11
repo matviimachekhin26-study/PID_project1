@@ -44,37 +44,64 @@ class CanonicalPID:
         self.b1 = -Kp - 2.0 * Kd / dt
         self.b2 = Kd / dt
 
-    def compute(self, error):
-        w0 = error - self.a1 * self.w1 - self.a2 * self.w2
-        output = self.b0 * w0 + self.b1 * self.w1 + self.b2 * self.w2
+    def compute(self, error, correction):
+        adj_error = error - correction
+
+        w0 = adj_error - self.a1 * self.w1 - self.a2 * self.w2
+        v = self.b0 * w0 + self.b1 * self.w1 + self.b2 * self.w2
+
+        output = max(self.min_output, min(self.max_output, v))
+
+        sat_diff = v - output
 
         self.w2 = self.w1
         self.w1 = w0
 
-        return max(self.min_output, min(self.max_output, output))
+        return output, sat_diff
 
 
-lim = 1000
 dt = 0.001
-total_time = 50
+total_time = 100
 steps = int(total_time / dt)
 
 tpoints = np.arange(steps) * dt
 
+"""
 print("input engine coeficients, K, T1, T2")
 K = float(input())
 T1 = float(input())
 T2 = float(input())
 
-engine = Engine(K, T1, T2, dt)
 
-print("input Kp, Ki, Kd")
+print("input Kp, Ki, Kd, control limit and observer constant")
 Kp = float(input())
 Ki = float(input())
 Kd = float(input())
+lim = float(input())
+obs_const = float(input())
 
 print("input SP")
 SP = float(input())
+"""
+
+params = []
+f = open("input.txt", "r")
+for line in f:
+    cleaned = line.strip()
+    if cleaned:
+        params.append(float(cleaned))
+
+K = params[0]
+T1 = params[1]
+T2 = params[2]
+Kp = params[3]
+Ki = params[4]
+Kd = params[5]
+lim = params[6]
+obs_const = params[7]
+SP = params[8]
+
+engine = Engine(K, T1, T2, dt)
 
 pid = CanonicalPID(Kp, 0, 0, -lim, lim, dt)
 
@@ -83,13 +110,14 @@ ppoints = np.zeros(steps)
 opoints = np.zeros(steps)
 
 PV = 0.0
+sat_diff = 0.0
 
 for i in range(steps):
     error = SP - PV
-    control = pid.compute(error)
+    control, sat_diff = pid.compute(error, sat_diff * Kp / Ki * obs_const)
 
 
-    PV = engine.compute(control)
+    PV += engine.compute(control)
 
     if(i == 1):
         pid.update_coeficients(Kp, Ki, 0, -lim, lim, dt)
@@ -112,13 +140,15 @@ plt.grid(True)
 plt.legend()
 plt.show()
 """
-10.0
-0.04
-0.04
-6.0
-3.0
+2.0
 0.2
-10
+0.1
+2.0
+0.5
+0.5
+10.0
+0.0
+10.0
 
 
 """
