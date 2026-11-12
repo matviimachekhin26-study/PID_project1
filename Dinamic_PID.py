@@ -5,7 +5,6 @@ class Engine:
     def __init__(self, K, T1, T2, dt):
         self.update_coeficients(K, T1, T2, dt)
 
-        #попередні стани
         self.w1 = 0.0
         self.w2 = 0.0
 
@@ -60,7 +59,7 @@ class CanonicalPID:
         return output, sat_diff
 
 
-dt = 0.00001
+dt = 0.0001
 total_time = 20
 steps = int(total_time / dt)
 
