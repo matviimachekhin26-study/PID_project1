@@ -43,23 +43,24 @@ class CanonicalPID:
         self.b1 = -Kp - 2.0 * Kd / dt
         self.b2 = Kd / dt
 
-    def compute(self, error, correction):
-        adj_error = error + correction
-
-        w0 = adj_error - self.a1 * self.w1 - self.a2 * self.w2
+    def compute(self, error):
+        w0 = error - self.a1 * self.w1 - self.a2 * self.w2
         v = self.b0 * w0 + self.b1 * self.w1 + self.b2 * self.w2
 
         output = max(self.min_output, min(self.max_output, v))
 
-        sat_diff = v - output
+        if self.b0 != 0:
+            w0_sat = (output - self.b1 * self.w1 - self.b2 * self.w2) / self.b0
+        else:
+            w0_sat = w0
 
         self.w2 = self.w1
-        self.w1 = w0
+        self.w1 = w0_sat
 
-        return output, sat_diff
+        return output
 
 
-dt = 0.0001
+dt = 0.001
 total_time = 20
 steps = int(total_time / dt)
 
@@ -97,8 +98,7 @@ Kp = params[3]
 Ki = params[4]
 Kd = params[5]
 lim = params[6]
-obs_const = params[7]
-SP = params[8]
+SP = params[7]
 
 engine = Engine(K, T1, T2, dt)
 
@@ -109,12 +109,10 @@ ppoints = np.zeros(steps)
 opoints = np.zeros(steps)
 
 PV = 0.0
-sat_diff = 0.0
 
 for i in range(steps):
     error = SP - PV
-    control, sat_diff = pid.compute(error, - sat_diff * obs_const / pid.b0)
-
+    control = pid.compute(error)
 
     PV += engine.compute(control)
 
