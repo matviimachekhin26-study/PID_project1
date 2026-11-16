@@ -102,7 +102,7 @@ SP = params[7]
 
 engine = Engine(K, T1, T2, dt)
 
-pid = CanonicalPID(Kp, Ki, Kd, -lim, lim, dt)
+pid = CanonicalPID(Kp, Ki, 0.0, -lim, lim, dt)
 
 spoints = np.full(steps, SP)
 ppoints = np.zeros(steps)
@@ -115,6 +115,9 @@ for i in range(steps):
     control = pid.compute(error)
 
     PV += engine.compute(control)
+
+    if(i == 1):
+        pid.update_coeficients(Kp, Ki, Kd, -lim, lim, dt)
 
     ppoints[i] = control
     opoints[i] = PV
