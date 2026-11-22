@@ -73,12 +73,11 @@ T1 = float(input())
 T2 = float(input())
 
 
-print("input Kp, Ki, Kd, control limit and observer constant")
+print("input Kp, Ki, Kd, control limit")
 Kp = float(input())
 Ki = float(input())
 Kd = float(input())
 lim = float(input())
-obs_const = float(input())
 
 print("input SP")
 SP = float(input())
